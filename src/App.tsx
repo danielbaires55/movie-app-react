@@ -125,7 +125,28 @@ function App() {
       >
         Trending TV Shows
       </Button>
-      {/* <Button onClick={() => handleMediaTypeChange('people')}>Trending People</Button> */}
+      <Button onClick={() => handleMediaTypeChange('people')}
+        size="lg"
+        colorScheme="teal"
+        variant="outline"
+        borderRadius="full"
+        px={8}
+        py={6}
+        mt={5}
+        ml={2}
+        fontWeight="bold"
+        borderWidth="2px"
+        _hover={{
+          bg: 'teal.100',
+          color: 'teal.800',
+          transform: 'scale(1.05)',
+          boxShadow: 'lg',
+        }}
+        _active={{
+          bg: 'teal.200',
+          transform: 'scale(0.95)',
+        }}
+        transition="all 0.3s ease">Trending People</Button>
 
       <Card.Root backgroundColor={'transparent'} border={'none'} >
         <Card.Header

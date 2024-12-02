@@ -6,24 +6,24 @@ const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export const getMovies = async () => {
     try {
-        const response = await fetch(`${BASE_URL}trending/movie/day?api_key=${API_KEY}`);
-        if (!response.ok) throw new Error("Errore nella richiesta a TMDB");
-        const data: ResponseTrendingType = await response.json();
-        return data.results; 
+        const result = await callApi("trending/movie/day");
+        return result;
     } catch (error) {
         console.error("Errore nel recupero dei movies:", error);
-        console.log('API Key:', API_KEY);
-        console.log('Base URL:', BASE_URL);
         return [];
     }
 };
 
 export const getPeople = async () => {
     try {
-    const response = await fetch(`${BASE_URL}trending/person/day?api_key=${API_KEY}`);
-        if (!response.ok) throw new Error("Errore nella richiesta a TMDB");
-        const data: ResponseTrendingType = await response.json();
-        return data.results;
+        const result = await callApi("trending/person/day");
+        // Mappare i risultati per rinominare 'name' in 'title' se necessario, oppure gestirli come sono
+        const people = result.map((person: any) => ({
+            ...person,
+            title: person.name,
+        }));
+
+        return people;
     } catch (error) {
         console.error("Errore nel recupero dei people:", error);
         return [];
@@ -32,7 +32,17 @@ export const getPeople = async () => {
 
 export const getTV = async () => {
     try {
-        const response = await fetch(`${BASE_URL}trending/tv/day?api_key=${API_KEY}`);
+        const result = await callApi("trending/tv/day");
+        return result;
+    } catch (error) {
+        console.error("Errore nel recupero dei TV:", error);
+        return [];
+    }
+};
+
+const callApi = async (apiURL: string) => {
+    try {
+        const response = await fetch(`${BASE_URL}${apiURL}?api_key=${API_KEY}`);
         if (!response.ok) throw new Error("Errore nella richiesta a TMDB");
         const data: ResponseTrendingType = await response.json();
         return data.results;
@@ -40,4 +50,4 @@ export const getTV = async () => {
         console.error("Errore nel recupero dei TV:", error);
         return [];
     }
-};
+}
