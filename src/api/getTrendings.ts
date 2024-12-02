@@ -17,7 +17,6 @@ export const getMovies = async () => {
 export const getPeople = async () => {
     try {
         const result = await callApi("trending/person/day");
-        // Mappare i risultati per rinominare 'name' in 'title' se necessario, oppure gestirli come sono
         const people = result.map((person: any) => ({
             ...person,
             title: person.name,

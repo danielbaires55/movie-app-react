@@ -5,6 +5,8 @@ import { MediaType } from './types/movieTypes';
 import { SimpleGrid, Card, Button, Spinner, Text, VStack } from "@chakra-ui/react";
 import Typewriter from 'typewriter-effect';
 import { SiThemoviedatabase } from "react-icons/si";
+import MediaButton from './components/MediaButton';
+import LoadingState from './components/LoadingState';
 
 function App() {
   const [topMovies, setTopMovies] = useState<MediaType[]>([]);
@@ -38,10 +40,7 @@ function App() {
             <MovieCard key={movie.id} item={movie} />
           ))
         ) : (
-          <VStack colorPalette="teal">
-            <Spinner size={'xl'} color="colorPalette.600" />
-            <Text color="colorPalette.600">Loading...</Text>
-          </VStack>
+          <LoadingState colorPalette="teal" />
         );
       case 'tv':
         return topTVSeries.length > 0 ? (
@@ -49,10 +48,7 @@ function App() {
             <MovieCard key={tvShow.id} item={tvShow} />
           ))
         ) : (
-          <VStack colorPalette="teal">
-            <Spinner size={'xl'} color="colorPalette.600" />
-            <Text color="colorPalette.600">Loading...</Text>
-          </VStack>
+          <LoadingState colorPalette="teal" />
         );
       case 'people':
         return topPeople.length > 0 ? (
@@ -60,10 +56,7 @@ function App() {
             <MovieCard key={person.id} item={person} />
           ))
         ) : (
-          <VStack colorPalette="teal">
-            <Spinner size={'xl'} color="colorPalette.600" />
-            <Text color="colorPalette.600">Loading...</Text>
-          </VStack>
+          <LoadingState colorPalette="teal" />
         );
       default:
         return null;
@@ -72,81 +65,24 @@ function App() {
 
   return (
     <>
-      <Button
+      {/*Media Buttons*/}
+      <MediaButton
         onClick={() => handleMediaTypeChange('movie')}
-        size="lg"
-        colorScheme="teal"
-        variant="outline"
-        borderRadius="full"
-        px={8}
-        py={6}
-        mt={5}
-        ml={2}
-        fontWeight="bold"
-        borderWidth="2px"
-        _hover={{
-          bg: 'teal.100',
-          color: 'teal.800',
-          transform: 'scale(1.05)',
-          boxShadow: 'lg',
-        }}
-        _active={{
-          bg: 'teal.200',
-          transform: 'scale(0.95)',
-        }}
-        transition="all 0.3s ease"
-      >
-        Trending Movies
-      </Button>
+        label="Trending Movies"
+      />
 
-      <Button
+      <MediaButton
         onClick={() => handleMediaTypeChange('tv')}
-        size="lg"
-        colorScheme="teal"
-        variant="outline"
-        borderRadius="full"
-        px={8}
-        py={6}
-        mt={5}
-        ml={2}
-        fontWeight="bold"
-        borderWidth="2px"
-        _hover={{
-          bg: 'teal.100',
-          color: 'teal.800',
-          transform: 'scale(1.05)',
-          boxShadow: 'lg',
-        }}
-        _active={{
-          bg: 'teal.200',
-          transform: 'scale(0.95)',
-        }}
-        transition="all 0.3s ease"
-      >
-        Trending TV Shows
-      </Button>
-      <Button onClick={() => handleMediaTypeChange('people')}
-        size="lg"
-        colorScheme="teal"
-        variant="outline"
-        borderRadius="full"
-        px={8}
-        py={6}
-        mt={5}
-        ml={2}
-        fontWeight="bold"
-        borderWidth="2px"
-        _hover={{
-          bg: 'teal.100',
-          color: 'teal.800',
-          transform: 'scale(1.05)',
-          boxShadow: 'lg',
-        }}
-        _active={{
-          bg: 'teal.200',
-          transform: 'scale(0.95)',
-        }}
-        transition="all 0.3s ease">Trending People</Button>
+        label="Trending TV Shows"
+      />
+
+      <MediaButton
+        onClick={() => handleMediaTypeChange('people')}
+        label="Trending People"
+      />
+
+
+      {/*Cards*/}
 
       <Card.Root backgroundColor={'transparent'} border={'none'} >
         <Card.Header
