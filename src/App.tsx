@@ -5,12 +5,6 @@ import { MediaType } from './types/movieTypes';
 import { SimpleGrid, Card, Button, Spinner, Text, VStack } from "@chakra-ui/react";
 import Typewriter from 'typewriter-effect';
 import { SiThemoviedatabase } from "react-icons/si";
-// import {
-//   MenuContent,
-//   MenuItem,
-//   MenuRoot,
-//   MenuTrigger,
-// } from "./components/ui/menu"
 
 function App() {
   const [topMovies, setTopMovies] = useState<MediaType[]>([]);
@@ -78,25 +72,6 @@ function App() {
 
   return (
     <>
-      {/* <MenuRoot>
-        <MenuTrigger asChild>
-          <Button size="lg" variant="outline" border={'none'} borderRadius={'sm'} color={'cyan.50'} _hover={{ color: 'blackAlpha.950' }}>
-            Menu
-          </Button>
-        </MenuTrigger>
-        <MenuContent>
-          <MenuItem asChild value="tmdb" _hover={{ cursor: 'pointer' }}>
-            <a
-              href="https://www.themoviedb.org/"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Source
-            </a>
-          </MenuItem>
-        </MenuContent>
-      </MenuRoot> */}
-
       <Button
         onClick={() => handleMediaTypeChange('movie')}
         size="lg"
