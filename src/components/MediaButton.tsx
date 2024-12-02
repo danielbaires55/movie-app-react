@@ -20,10 +20,11 @@ const MediaButton: React.FC<MediaButtonProps> = ({ onClick, label }) => {
       mt={5}
       ml={2}
       fontWeight="bold"
-      borderWidth="2px"
+      borderWidth={0.5}
+      borderColor={'border.info'}
       _hover={{
-        bg: 'teal.100',
-        color: 'teal.800',
+        bg: 'bg.inverted',
+        color: 'gray.950',
         transform: 'scale(1.05)',
         boxShadow: 'lg',
       }}
