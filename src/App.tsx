@@ -65,6 +65,11 @@ function App() {
 
   return (
     <>
+
+      {/* <Text mt={2}>
+        <Link to="/details">Details</Link>
+      </Text> */}
+
       {/*Media Buttons*/}
       <MediaButton
         onClick={() => handleMediaTypeChange('movie')}
@@ -76,10 +81,10 @@ function App() {
         label="Trending TV Shows"
       />
 
-      <MediaButton
+      {/* <MediaButton
         onClick={() => handleMediaTypeChange('people')}
         label="Trending People"
-      />
+      /> */}
 
 
       {/*Cards*/}
