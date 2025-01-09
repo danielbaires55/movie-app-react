@@ -1,27 +1,56 @@
-{
-  "compilerOptions": {
-    "paths": {
-      "@/*": [
-        "./src/*"
-      ]
-    },
-    "module": "ESNext",
-    "target": "ES2020",
-    "useDefineForClassFields": true,
-    "lib": [
-      "ES2020",
-      "DOM",
-      "DOM.Iterable"
-    ],
-    "skipLibCheck": true,
-    "moduleResolution": "Bundler",
-    "allowImportingTsExtensions": true,
-    "isolatedModules": true,
-    "moduleDetection": "force",
-    "noEmit": true,
-    "jsx": "react-jsx",
-  },
-  // "include": [
-  //   "src"
-  // ]
-}
+ {
+   "compilerOptions": {
+     "paths": {
+       "@/*": [
+         "./src/*"
+       ]
+     },
+     "module": "ESNext",
+     "target": "ES2020",
+     "useDefineForClassFields": true,
+     "lib": [
+       "ES2020",
+       "DOM",
+       "DOM.Iterable"
+     ],
+     "skipLibCheck": true,
+     "moduleResolution": "Bundler",
+     "allowImportingTsExtensions": true,
+     "isolatedModules": true,
+     "moduleDetection": "force",
+     "noEmit": true,
+     "jsx": "react-jsx",
+   },
+   // "include": [
+   //   "src"
+   // ]
+ }
+
+// {
+//   "compilerOptions": {
+//     "paths": {
+//       "@/*": [
+//         "./src/*"
+//       ]
+//     },
+//     "module": "ESNext",
+//     "target": "ES2020",
+//     "useDefineForClassFields": true,
+//     "lib": [
+//       "ES2020",
+//       "DOM",
+//       "DOM.Iterable"
+//     ],
+//     "skipLibCheck": true,
+//     "moduleResolution": "Bundler",
+//     "allowImportingTsExtensions": true,
+//     "isolatedModules": true,
+//     "moduleDetection": "force",
+//     "noEmit": true,
+//     "jsx": "react-jsx"
+//   },
+//   "include": [
+//     "src/**/*",
+//     "vite.config.ts"  // Assicurati che Vite venga preso in considerazione
+//   ]
+// }
