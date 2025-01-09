@@ -82,7 +82,6 @@ const DetailsPage: React.FC = () => {
               <Text><strong>Runtime:</strong> {movie.runtime} minutes</Text>
               <Text><strong>Status:</strong> {movie.status}</Text>
               <Text><strong>Genres:</strong> {movie.genres.map(genre => genre.name).join(', ')}</Text>
-              {/* Add more movie details here */}
             </VStack>
           </Box>
         );
@@ -109,7 +108,6 @@ const DetailsPage: React.FC = () => {
               <Text><strong>Rating:</strong> {tv.vote_average}</Text>
               <Text><strong>Languages:</strong> {tv.languages.join(', ')}</Text>
               <Text><strong>Genres:</strong> {tv.genres.map(genre => genre.name).join(', ')}</Text>
-              {/* Add more TV show details here */}
             </VStack>
           </Box>
         );
@@ -132,7 +130,6 @@ const DetailsPage: React.FC = () => {
             <VStack mt="4" align="start">
               <Text><strong>Birthday:</strong> {person.birthday}</Text>
               <Text><strong>Known For:</strong> {person.known_for_department}</Text>
-              {/* Add more person details here */}
             </VStack>
           </Box>
         );
