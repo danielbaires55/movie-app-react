@@ -15,7 +15,7 @@ export const getImagePath = (
 
 // Funzione per ottenere l'immagine di un elemento multimediale (film, serie TV o persona)
 export const getMediaImage = (item: MediaType): string => {
-    const placeholderImage = 'https://via.placeholder.com/300x450'; 
+    const placeholderImage = 'https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg'; 
     // Immagine di placeholder usata quando non è disponibile un'immagine valida
 
     if (!item) {
