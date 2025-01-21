@@ -2,11 +2,11 @@
 import React from 'react';
 import { Button } from '@chakra-ui/react';
 
+// Definisce l'interfaccia per le props del componente
 interface MediaButtonProps {
-  onClick: () => void;
-  label: string;
+  onClick: () => void;  // Funzione da eseguire al click del bottone
+  label: string;        // Testo da mostrare nel bottone
 }
-
 const MediaButton: React.FC<MediaButtonProps> = ({ onClick, label }) => {
   return (
     <Button

@@ -1,3 +1,4 @@
+// Importa le dipendenze necessarie
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
 import { getDetails } from '../api/details';
@@ -7,12 +8,18 @@ import { getMediaImage } from '../functions/functions';
 import { MediaType } from '../types/movieTypes';
 import { FaArrowLeft } from 'react-icons/fa';
 
+// Componente principale per la pagina dei dettagli
 const DetailsPage: React.FC = () => {
+
+  // Estrae i parametri dall'URL (tipo di media e ID)
   const { media_type, id } = useParams<{ media_type: string; id: string }>();
+
+  // Gestione dello stato
   const [data, setData] = useState<MovieDetailsType | TvDetailsType | PersonDetailsType | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Funzione per recuperare i dati dall'API
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -25,10 +32,12 @@ const DetailsPage: React.FC = () => {
     }
   };
 
+  // Effettua la chiamata API quando cambiano media_type o id
   useEffect(() => {
     fetchData();
   }, [media_type, id]);
 
+  // Gestione stato di caricamento
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
@@ -37,6 +46,7 @@ const DetailsPage: React.FC = () => {
     );
   }
 
+  // Gestione stato di errore
   if (error) {
     return (
       <Box textAlign="center" mt="20">
@@ -46,10 +56,12 @@ const DetailsPage: React.FC = () => {
     );
   }
 
+  // Se non ci sono dati disponibili
   if (!data) {
     return <div>No details available.</div>;
   }
 
+  // Prepara i dati per ottenere l'immagin
   const tempMediaType: MediaType = {
     ...data,
     media_type: media_type as 'movie' | 'tv' | 'person',
@@ -57,6 +69,7 @@ const DetailsPage: React.FC = () => {
 
   const imageUrl = getMediaImage(tempMediaType);
 
+  // Funzione che renderizza i dettagli in base al tipo di media
   const renderDetails = () => {
     switch (media_type) {
       case 'movie':
@@ -138,6 +151,7 @@ const DetailsPage: React.FC = () => {
     }
   };
 
+  // Rendering principale
   return (
     <Box position="relative">
       <IconButton
