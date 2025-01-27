@@ -48,3 +48,7 @@ export default tseslint.config({
   },
 })
 ```
+## Search with react state form and reac hook form
+
+- Aggiungere due form che fanno la stessa cosa ma con approcci diversi
+- Search movie. (un campo) --- handleChange form.

@@ -1,100 +1,148 @@
-import { useEffect, useState } from 'react'; // React hooks per la gestione dello stato e degli effetti collaterali
-import { getMovies, getPeople, getTV } from './api/getTrendings'; // Funzioni API per ottenere i dati dei film, delle persone e delle serie TV
-import { MovieCard } from './components/MovieCard'; // Componente per rappresentare un singolo film/elemento multimediale
-import { MediaType } from './types/movieTypes'; // Tipo TypeScript per i dati multimediali
-import { SimpleGrid, Card, Button, Spinner, Text, VStack } from "@chakra-ui/react"; // Componenti Chakra UI per creare l'interfaccia
-import Typewriter from 'typewriter-effect'; // Componente per un effetto di scrittura animato
-import { SiThemoviedatabase } from "react-icons/si"; // Icona dal set di React Icons
-import MediaButton from './components/MediaButton'; // Pulsanti per selezionare i tipi di media
-import LoadingState from './components/LoadingState'; // Componente per mostrare uno stato di caricamento
+import { useEffect, useState } from "react";
+import { getMovies, getPeople, getTV } from "./api/getTrendings";
+import { MovieCard } from "./components/MovieCard";
+import { MediaType } from "./types/movieTypes";
+import { SimpleGrid, Card, Text } from "@chakra-ui/react";
+import { TextField, Box } from "@mui/material";
+import Typewriter from "typewriter-effect";
+import { SiThemoviedatabase } from "react-icons/si";
+import MediaButton from "./components/MediaButton";
+import LoadingState from "./components/LoadingState";
+
+// Interfaccia per la gestione degli errori del form
+interface FormErrors {
+  searchTerm?: string;
+}
+
+// Interfaccia per lo stato della ricerca
+interface SearchState {
+  searchTerm: string;
+  errors: FormErrors;
+}
 
 function App() {
-  // Stati per memorizzare i dati delle API
   const [topMovies, setTopMovies] = useState<MediaType[]>([]);
   const [topPeople, setTopPeople] = useState<MediaType[]>([]);
   const [topTVSeries, setTopTVSeries] = useState<MediaType[]>([]);
+  const [selectedMediaType, setSelectedMediaType] = useState<"movie" | "tv" | "people">("movie");
+  
+  const [searchState, setSearchState] = useState<SearchState>({
+    searchTerm: "",
+    errors: {}
+  });
 
-  // Stato per tenere traccia del tipo di media selezionato
-  const [selectedMediaType, setSelectedMediaType] = useState<'movie' | 'tv' | 'people'>('movie');
-
-  // Effetto per caricare i dati delle API quando il componente viene montato
   useEffect(() => {
     const fetchData = async () => {
-      const movies = await getMovies(); // Recupera i dati dei film
-      const people = await getPeople(); // Recupera i dati delle persone
-      const tv = await getTV(); // Recupera i dati delle serie TV
+      const movies = await getMovies();
+      const people = await getPeople();
+      const tv = await getTV();
 
-      // Aggiorna gli stati con i dati ottenuti
       setTopMovies(movies);
       setTopPeople(people);
       setTopTVSeries(tv);
     };
 
     fetchData();
-  }, []); // Array vuoto come dipendenza significa che viene eseguito solo al montaggio del componente
+  }, []);
 
-  // Funzione per gestire il cambio del tipo di media
-  const handleMediaTypeChange = (type: 'movie' | 'tv' | 'people') => {
-    setSelectedMediaType(type);
+  const validate = (value: string): FormErrors => {
+    const errors: FormErrors = {};
+    
+    if (value.length > 50) {
+      errors.searchTerm = "La ricerca non può superare i 50 caratteri";
+    }
+    
+    if (value.trim() && value.length < 2) {
+      errors.searchTerm = "Inserisci almeno 2 caratteri";
+    }
+
+    if (/^\s+$/.test(value)) {
+      errors.searchTerm = "La ricerca non può contenere solo spazi";
+    }
+
+    return errors;
   };
 
-  // Funzione per renderizzare le card in base al tipo di media selezionato
-  const renderCards = () => {
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    const newErrors = validate(value);
+    
+    setSearchState({
+      searchTerm: value,
+      errors: newErrors
+    });
+  };
+
+  const handleMediaTypeChange = (type: "movie" | "tv" | "people") => {
+    setSelectedMediaType(type);
+    setSearchState({
+      searchTerm: "",
+      errors: {}
+    });
+  };
+
+  const getFilteredContent = () => {
+    let currentContent: MediaType[] = [];
+    
     switch (selectedMediaType) {
-      case 'movie':
-        return topMovies.length > 0 ? (
-          topMovies.map((movie) => (
-            <MovieCard key={movie.id} item={movie} /> // Renderizza una card per ogni film
-          ))
-        ) : (
-          <LoadingState colorPalette="teal" /> // Mostra uno stato di caricamento se i dati non sono ancora pronti
-        );
-      case 'tv':
-        return topTVSeries.length > 0 ? (
-          topTVSeries.map((tvShow) => (
-            <MovieCard key={tvShow.id} item={tvShow} /> // Renderizza una card per ogni serie TV
-          ))
-        ) : (
-          <LoadingState colorPalette="teal" />
-        );
-      case 'people':
-        return topPeople.length > 0 ? (
-          topPeople.map((person) => (
-            <MovieCard key={person.id} item={person} /> // Renderizza una card per ogni persona
-          ))
-        ) : (
-          <LoadingState colorPalette="teal" />
-        );
-      default:
-        return null; // Caso di fallback
+      case "movie":
+        currentContent = topMovies;
+        break;
+      case "tv":
+        currentContent = topTVSeries;
+        break;
+      case "people":
+        currentContent = topPeople;
+        break;
     }
+
+    if (Object.keys(searchState.errors).length > 0 || !searchState.searchTerm) {
+      return currentContent;
+    }
+
+    return currentContent.filter(item => 
+      item.title?.toLowerCase().includes(searchState.searchTerm.toLowerCase()) ||
+      item.name?.toLowerCase().includes(searchState.searchTerm.toLowerCase())
+    );
+  };
+
+  const renderCards = () => {
+    const filteredContent = getFilteredContent();
+    
+    if (filteredContent.length === 0 && !searchState.searchTerm) {
+      return <LoadingState colorPalette="teal" />;
+    }
+
+    if (filteredContent.length === 0 && searchState.searchTerm && !searchState.errors.searchTerm) {
+      return (
+        <Text color="cyan.50" fontSize="xl" textAlign="center" width="100%">
+          Nessun risultato trovato per "{searchState.searchTerm}"
+        </Text>
+      );
+    }
+
+    return filteredContent.map((item) => (
+      <MovieCard key={item.id} item={item} />
+    ));
   };
 
   return (
     <>
-      {/* Pulsanti per selezionare il tipo di media */}
       <MediaButton
-        onClick={() => handleMediaTypeChange('movie')}
+        onClick={() => handleMediaTypeChange("movie")}
         label="Trending Movies"
       />
       <MediaButton
-        onClick={() => handleMediaTypeChange('tv')}
+        onClick={() => handleMediaTypeChange("tv")}
         label="Trending TV Shows"
       />
-      {/* Il pulsante per le persone*/}
-       <MediaButton
-        onClick={() => handleMediaTypeChange('people')}
+      <MediaButton
+        onClick={() => handleMediaTypeChange("people")}
         label="Trending People"
-      /> 
+      />
 
-      {/* Struttura principale della pagina */}
-      <Card.Root backgroundColor={'transparent'} border={'none'}>
-        {/* Intestazione con testo animato e icona */}
-        <Card.Header
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-        >
+      <Card.Root backgroundColor={"transparent"} border={"none"}>
+        <Card.Header display="flex" alignItems="center" justifyContent="center" flexDirection="column">
           <Text
             textAlign="center"
             fontSize={90}
@@ -106,7 +154,7 @@ function App() {
           >
             <Typewriter
               options={{
-                strings: ['Welcome to'],
+                strings: ["Welcome to"],
                 autoStart: true,
                 loop: true,
                 delay: 200,
@@ -119,17 +167,69 @@ function App() {
             color="cyan.50"
             mb={6}
             mt={1}
-            display={'inline-block'}
-            transition={'all 0.5s ease-in-out'}
-            _hover={{ cursor: 'pointer', transform: 'scale(1.05)', opacity: 0.8 }}
+            display={"inline-block"}
+            transition={"all 0.5s ease-in-out"}
+            _hover={{
+              cursor: "pointer",
+              transform: "scale(1.05)",
+              opacity: 0.8,
+            }}
           >
-            <SiThemoviedatabase /> {/* Icona personalizzata */}
+            <SiThemoviedatabase />
           </Text>
+          
+          {/* Form di ricerca con Material UI */}
+          <Box sx={{ width: '50%', minWidth: 300, mb: 4 }}>
+            <TextField
+              fullWidth
+              placeholder={`Cerca ${
+                selectedMediaType === "movie" ? "film" :
+                selectedMediaType === "tv" ? "serie TV" : "persone"
+              }...`}
+              value={searchState.searchTerm}
+              onChange={handleSearchChange}
+              error={!!searchState.errors.searchTerm}
+              helperText={searchState.errors.searchTerm}
+              variant="outlined"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: 'rgba(255, 255, 255, 0.3)',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'rgba(255, 255, 255, 0.5)',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#00B5D8',
+                  },
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                },
+                '& .MuiInputBase-input': {
+                  color: 'white',
+                  '&::placeholder': {
+                    color: 'rgba(255, 255, 255, 0.7)',
+                    opacity: 1,
+                  },
+                },
+                '& .MuiFormHelperText-root': {
+                  color: '#FC8181',
+                  marginLeft: 0,
+                },
+              }}
+            />
+          </Box>
         </Card.Header>
 
-        {/* Griglia per mostrare le card */}
-        <SimpleGrid columns={4} minChildWidth="300px" gap={"30px"} justifyItems="center" mt={30} mb={30} border={'none'}>
-          {renderCards()} {/* Chiamata alla funzione per mostrare le card */}
+        <SimpleGrid
+          columns={4}
+          minChildWidth="300px"
+          gap={"30px"}
+          justifyItems="center"
+          mt={30}
+          mb={30}
+          border={"none"}
+        >
+          {renderCards()}
         </SimpleGrid>
       </Card.Root>
     </>
