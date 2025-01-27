@@ -24,11 +24,13 @@ function App() {
   const [topMovies, setTopMovies] = useState<MediaType[]>([]);
   const [topPeople, setTopPeople] = useState<MediaType[]>([]);
   const [topTVSeries, setTopTVSeries] = useState<MediaType[]>([]);
-  const [selectedMediaType, setSelectedMediaType] = useState<"movie" | "tv" | "people">("movie");
-  
+  const [selectedMediaType, setSelectedMediaType] = useState<
+    "movie" | "tv" | "people"
+  >("movie");
+
   const [searchState, setSearchState] = useState<SearchState>({
     searchTerm: "",
-    errors: {}
+    errors: {},
   });
 
   useEffect(() => {
@@ -45,13 +47,14 @@ function App() {
     fetchData();
   }, []);
 
+  //Validazione
   const validate = (value: string): FormErrors => {
     const errors: FormErrors = {};
-    
+
     if (value.length > 50) {
       errors.searchTerm = "La ricerca non può superare i 50 caratteri";
     }
-    
+
     if (value.trim() && value.length < 2) {
       errors.searchTerm = "Inserisci almeno 2 caratteri";
     }
@@ -66,10 +69,10 @@ function App() {
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     const newErrors = validate(value);
-    
+
     setSearchState({
       searchTerm: value,
-      errors: newErrors
+      errors: newErrors,
     });
   };
 
@@ -77,13 +80,13 @@ function App() {
     setSelectedMediaType(type);
     setSearchState({
       searchTerm: "",
-      errors: {}
+      errors: {},
     });
   };
 
   const getFilteredContent = () => {
     let currentContent: MediaType[] = [];
-    
+
     switch (selectedMediaType) {
       case "movie":
         currentContent = topMovies;
@@ -100,20 +103,27 @@ function App() {
       return currentContent;
     }
 
-    return currentContent.filter(item => 
-      item.title?.toLowerCase().includes(searchState.searchTerm.toLowerCase()) ||
-      item.name?.toLowerCase().includes(searchState.searchTerm.toLowerCase())
+    return currentContent.filter(
+      (item) =>
+        item.title
+          ?.toLowerCase()
+          .includes(searchState.searchTerm.toLowerCase()) ||
+        item.name?.toLowerCase().includes(searchState.searchTerm.toLowerCase())
     );
   };
 
   const renderCards = () => {
     const filteredContent = getFilteredContent();
-    
+
     if (filteredContent.length === 0 && !searchState.searchTerm) {
       return <LoadingState colorPalette="teal" />;
     }
 
-    if (filteredContent.length === 0 && searchState.searchTerm && !searchState.errors.searchTerm) {
+    if (
+      filteredContent.length === 0 &&
+      searchState.searchTerm &&
+      !searchState.errors.searchTerm
+    ) {
       return (
         <Text color="cyan.50" fontSize="xl" textAlign="center" width="100%">
           Nessun risultato trovato per "{searchState.searchTerm}"
@@ -142,7 +152,12 @@ function App() {
       />
 
       <Card.Root backgroundColor={"transparent"} border={"none"}>
-        <Card.Header display="flex" alignItems="center" justifyContent="center" flexDirection="column">
+        <Card.Header
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          flexDirection="column"
+        >
           <Text
             textAlign="center"
             fontSize={90}
@@ -177,14 +192,17 @@ function App() {
           >
             <SiThemoviedatabase />
           </Text>
-          
+
           {/* Form di ricerca con Material UI */}
-          <Box sx={{ width: '50%', minWidth: 300, mb: 4 }}>
+          <Box sx={{ width: "50%", minWidth: 300, mb: 4 }}>
             <TextField
               fullWidth
               placeholder={`Cerca ${
-                selectedMediaType === "movie" ? "film" :
-                selectedMediaType === "tv" ? "serie TV" : "persone"
+                selectedMediaType === "movie"
+                  ? "film"
+                  : selectedMediaType === "tv"
+                  ? "serie TV"
+                  : "persone"
               }...`}
               value={searchState.searchTerm}
               onChange={handleSearchChange}
@@ -192,27 +210,27 @@ function App() {
               helperText={searchState.errors.searchTerm}
               variant="outlined"
               sx={{
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: 'rgba(255, 255, 255, 0.3)',
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor: "rgba(255, 255, 255, 0.3)",
                   },
-                  '&:hover fieldset': {
-                    borderColor: 'rgba(255, 255, 255, 0.5)',
+                  "&:hover fieldset": {
+                    borderColor: "rgba(255, 255, 255, 0.5)",
                   },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#00B5D8',
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#00B5D8",
                   },
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  backgroundColor: "rgba(255, 255, 255, 0.1)",
                 },
-                '& .MuiInputBase-input': {
-                  color: 'white',
-                  '&::placeholder': {
-                    color: 'rgba(255, 255, 255, 0.7)',
+                "& .MuiInputBase-input": {
+                  color: "white",
+                  "&::placeholder": {
+                    color: "rgba(255, 255, 255, 0.7)",
                     opacity: 1,
                   },
                 },
-                '& .MuiFormHelperText-root': {
-                  color: '#FC8181',
+                "& .MuiFormHelperText-root": {
+                  color: "#FC8181",
                   marginLeft: 0,
                 },
               }}
