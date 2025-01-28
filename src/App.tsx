@@ -1,13 +1,14 @@
+
 import { useEffect, useState } from "react";
 import { getMovies, getPeople, getTV } from "./api/getTrendings";
 import { MovieCard } from "./components/MovieCard";
 import { MediaType } from "./types/movieTypes";
-import { SimpleGrid, Card, Text } from "@chakra-ui/react";
+import { SimpleGrid, Card, Text, Flex } from "@chakra-ui/react";
 import { TextField, Box } from "@mui/material";
-import Typewriter from "typewriter-effect";
 import { SiThemoviedatabase } from "react-icons/si";
 import MediaButton from "./components/MediaButton";
 import LoadingState from "./components/LoadingState";
+import { FaSadTear } from "react-icons/fa";
 
 // Interfaccia per la gestione degli errori del form
 interface FormErrors {
@@ -125,9 +126,17 @@ function App() {
       !searchState.errors.searchTerm
     ) {
       return (
-        <Text color="cyan.50" fontSize="xl" textAlign="center" width="100%">
-          Nessun risultato trovato per "{searchState.searchTerm}"
-        </Text>
+        <Flex
+          color="cyan.50"
+          fontSize="xl"
+          textAlign="center"
+          width="100%"
+          alignItems="center"
+          justifyContent="center"
+        >         
+          <Text>Nessun risultato trovato per "{searchState.searchTerm}"</Text>
+          <FaSadTear style={{ marginLeft: "8px" }} />
+        </Flex>
       );
     }
 
@@ -158,7 +167,7 @@ function App() {
           justifyContent="center"
           flexDirection="column"
         >
-          <Text
+           <Text
             textAlign="center"
             fontSize={90}
             fontWeight="bold"
@@ -167,18 +176,11 @@ function App() {
             mt={1}
             letterSpacing="wider"
           >
-            <Typewriter
-              options={{
-                strings: ["Welcome to"],
-                autoStart: true,
-                loop: true,
-                delay: 200,
-              }}
-            />
+
           </Text>
           <Text
             textAlign="center"
-            fontSize={175}
+            fontSize={245}
             color="cyan.50"
             mb={6}
             mt={1}
@@ -193,7 +195,7 @@ function App() {
             <SiThemoviedatabase />
           </Text>
 
-          {/* Form di ricerca con Material UI */}
+          {/* Form */}
           <Box sx={{ width: "50%", minWidth: 300, mb: 4 }}>
             <TextField
               fullWidth
