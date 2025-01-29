@@ -1,5 +1,5 @@
-
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { getMovies, getPeople, getTV } from "./api/getTrendings";
 import { MovieCard } from "./components/MovieCard";
 import { MediaType } from "./types/movieTypes";
@@ -10,16 +10,9 @@ import MediaButton from "./components/MediaButton";
 import LoadingState from "./components/LoadingState";
 import { FaSadTear } from "react-icons/fa";
 
-// Interfaccia per la gestione degli errori del form
-interface FormErrors {
-  searchTerm?: string;
-}
-
-// Interfaccia per lo stato della ricerca
-interface SearchState {
+type SearchForm = {
   searchTerm: string;
-  errors: FormErrors;
-}
+};
 
 function App() {
   const [topMovies, setTopMovies] = useState<MediaType[]>([]);
@@ -29,10 +22,18 @@ function App() {
     "movie" | "tv" | "people"
   >("movie");
 
-  const [searchState, setSearchState] = useState<SearchState>({
-    searchTerm: "",
-    errors: {},
+  // Init di React Hook Form
+  const {
+    register,
+    watch,
+    formState: { errors },
+    reset
+  } = useForm<SearchForm>({
+    mode: "onChange",
+    defaultValues: { searchTerm: "" }
   });
+
+  const searchTerm = watch("searchTerm");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,41 +49,9 @@ function App() {
     fetchData();
   }, []);
 
-  //Validazione
-  const validate = (value: string): FormErrors => {
-    const errors: FormErrors = {};
-
-    if (value.length > 50) {
-      errors.searchTerm = "La ricerca non può superare i 50 caratteri";
-    }
-
-    if (value.trim() && value.length < 2) {
-      errors.searchTerm = "Inserisci almeno 2 caratteri";
-    }
-
-    if (/^\s+$/.test(value)) {
-      errors.searchTerm = "La ricerca non può contenere solo spazi";
-    }
-
-    return errors;
-  };
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = event.target;
-    const newErrors = validate(value);
-
-    setSearchState({
-      searchTerm: value,
-      errors: newErrors,
-    });
-  };
-
   const handleMediaTypeChange = (type: "movie" | "tv" | "people") => {
     setSelectedMediaType(type);
-    setSearchState({
-      searchTerm: "",
-      errors: {},
-    });
+    reset({ searchTerm: "" }); // Resetta il form al cambio media type
   };
 
   const getFilteredContent = () => {
@@ -100,31 +69,33 @@ function App() {
         break;
     }
 
-    if (Object.keys(searchState.errors).length > 0 || !searchState.searchTerm) {
+    if (errors.searchTerm || !searchTerm) {
       return currentContent;
     }
 
     return currentContent.filter(
       (item) =>
-        item.title
-          ?.toLowerCase()
-          .includes(searchState.searchTerm.toLowerCase()) ||
-        item.name?.toLowerCase().includes(searchState.searchTerm.toLowerCase())
+        item.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.name?.toLowerCase().includes(searchTerm.toLowerCase())
     );
+  };
+
+  // validazione
+  const validateSearchTerm = (value: string) => {
+    if (value.length > 50) return "La ricerca non può superare i 50 caratteri";
+    if (value.trim() && value.length < 2) return "Inserisci almeno 2 caratteri";
+    if (/^\s+$/.test(value)) return "La ricerca non può contenere solo spazi";
+    return true;
   };
 
   const renderCards = () => {
     const filteredContent = getFilteredContent();
 
-    if (filteredContent.length === 0 && !searchState.searchTerm) {
+    if (filteredContent.length === 0 && !searchTerm) {
       return <LoadingState colorPalette="teal" />;
     }
 
-    if (
-      filteredContent.length === 0 &&
-      searchState.searchTerm &&
-      !searchState.errors.searchTerm
-    ) {
+    if (filteredContent.length === 0 && searchTerm && !errors.searchTerm) {
       return (
         <Flex
           color="cyan.50"
@@ -134,7 +105,7 @@ function App() {
           alignItems="center"
           justifyContent="center"
         >         
-          <Text>Nessun risultato trovato per "{searchState.searchTerm}"</Text>
+          <Text>Nessun risultato trovato per "{searchTerm}"</Text>
           <FaSadTear style={{ marginLeft: "8px" }} />
         </Flex>
       );
@@ -167,17 +138,6 @@ function App() {
           justifyContent="center"
           flexDirection="column"
         >
-           <Text
-            textAlign="center"
-            fontSize={90}
-            fontWeight="bold"
-            color="cyan.50"
-            mb={4}
-            mt={1}
-            letterSpacing="wider"
-          >
-
-          </Text>
           <Text
             textAlign="center"
             fontSize={245}
@@ -199,6 +159,9 @@ function App() {
           <Box sx={{ width: "50%", minWidth: 300, mb: 4 }}>
             <TextField
               fullWidth
+              {...register("searchTerm", {
+                validate: validateSearchTerm
+              })}
               placeholder={`Cerca ${
                 selectedMediaType === "movie"
                   ? "film"
@@ -206,10 +169,8 @@ function App() {
                   ? "serie TV"
                   : "persone"
               }...`}
-              value={searchState.searchTerm}
-              onChange={handleSearchChange}
-              error={!!searchState.errors.searchTerm}
-              helperText={searchState.errors.searchTerm}
+              error={!!errors.searchTerm}
+              helperText={errors.searchTerm?.message}
               variant="outlined"
               sx={{
                 "& .MuiOutlinedInput-root": {
