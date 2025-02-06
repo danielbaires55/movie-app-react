@@ -47,7 +47,7 @@ function Search() {
     }
 
     try {
-      const data = mediaType === 'movie' ? await getMovies() : await getTV();
+      const data = mediaType === 'movie' ?  await getMovies() :  await getTV();
       
       const filtered = data.filter(item => 
         item.title.toLowerCase().includes(query.toLowerCase())
