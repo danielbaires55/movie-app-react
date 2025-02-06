@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 // Importa le dipendenze necessarie
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
@@ -26,7 +27,7 @@ const DetailsPage: React.FC = () => {
       const details = await getDetails({ media_type, id: Number(id) });
       setData(details);
     } catch (err) {
-      setError('Failed to fetch details. Please try again later.');
+      setError(`Failed to fetch details: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
