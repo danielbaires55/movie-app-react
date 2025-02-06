@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { getMovies, getPeople, getTV } from "./api/getTrendings";
+import { useTrendingMovies, useTrendingPeople, useTrendingTV } from "./api/getTrendings";
 import { MovieCard } from "./components/MovieCard";
 import { MediaType } from "./types/movieTypes";
 import { SimpleGrid, Card, Text, Flex } from "@chakra-ui/react";
@@ -36,19 +36,15 @@ function App() {
 
   const searchTerm = watch("searchTerm");
 
+  const movies = useTrendingMovies();
+  const people = useTrendingPeople();
+  const tv = useTrendingTV();
+
   useEffect(() => {
-    const fetchData = async () => {
-      const movies = await getMovies();
-      const people = await getPeople();
-      const tv = await getTV();
-
-      setTopMovies(movies);
-      setTopPeople(people);
-      setTopTVSeries(tv);
-    };
-
-    fetchData();
-  }, []);
+    if (movies.data) setTopMovies(movies.data);
+    if (people.data) setTopPeople(people.data);
+    if (tv.data) setTopTVSeries(tv.data);
+  }, [movies.data, people.data, tv.data]);
 
   const handleMediaTypeChange = (type: "movie" | "tv" | "people") => {
     setSelectedMediaType(type);
