@@ -2,7 +2,7 @@ import { MediaType } from "../types/movieTypes";
 // Importa il tipo TypeScript `MediaType` per definire i tipi di dati accettati dalla funzione `getMediaImage`
 
 // URL base per le immagini, recuperato da una variabile d'ambiente tramite `import.meta.env`
-export const base_url = import.meta.env.VITE_IMG_BASE_URL;
+export const base_url = "https://image.tmdb.org/t/p/w500";
 
 // Funzione per ottenere il percorso completo dell'immagine
 export const getImagePath = (
