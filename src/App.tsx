@@ -10,6 +10,7 @@ import MediaButton from "./components/MediaButton";
 import LoadingState from "./components/LoadingState";
 import { FaSadTear } from "react-icons/fa";
 
+//search form type
 type SearchForm = {
   searchTerm: string;
 };

@@ -1,10 +1,11 @@
+/* eslint-disable no-useless-catch */
 import { MovieDetailsType, TvDetailsType, PersonDetailsType } from "../types/detailsTypes";
 // Importa i tipi TypeScript che definiscono la struttura dei dettagli di film, serie TV e persone.
 
-const API_KEY = import.meta.env.VITE_API_KEY;
+const API_KEY = "04d35ad46e41458360d799f3c1a4b1ed";
 // Recupera la chiave API da una variabile d'ambiente per accedere alle API di TMDB (The Movie Database).
 
-const BASE_URL = import.meta.env.VITE_BASE_URL;
+const BASE_URL = "https://api.themoviedb.org/3/";
 // Recupera l'URL base dell'API TMDB da una variabile d'ambiente.
 
 export const getDetails = async ({ media_type, id }: { media_type: string; id: number }): Promise<MovieDetailsType | TvDetailsType | PersonDetailsType> => {

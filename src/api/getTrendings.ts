@@ -1,10 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ResponseTrendingType } from "../types/responseTypes";
 // Importa il tipo `ResponseTrendingType`, che rappresenta la struttura della risposta dell'API per le richieste di trend.
 
-const API_KEY = import.meta.env.VITE_API_KEY;
+// const API_KEY = import.meta.env.VITE_API_KEY;
+const API_KEY = "04d35ad46e41458360d799f3c1a4b1ed";
 // Recupera la chiave API da una variabile d'ambiente per accedere all'API TMDB.
 
-const BASE_URL = import.meta.env.VITE_BASE_URL;
+// const BASE_URL = import.meta.env.VITE_BASE_URL;
+const BASE_URL = "https://api.themoviedb.org/3/";
 // Recupera l'URL base dell'API TMDB da una variabile d'ambiente.
 
 // Funzione per ottenere i film di tendenza
