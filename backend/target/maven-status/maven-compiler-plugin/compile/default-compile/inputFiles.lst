@@ -1,0 +1,7 @@
+/root/frontend/movie-app-react-backend/backend/src/main/java/com/movieapp/api/model/TVShow.java
+/root/frontend/movie-app-react-backend/backend/src/main/java/com/movieapp/api/controller/MovieController.java
+/root/frontend/movie-app-react-backend/backend/src/main/java/com/movieapp/api/repository/MovieRepository.java
+/root/frontend/movie-app-react-backend/backend/src/main/java/com/movieapp/api/model/Movie.java
+/root/frontend/movie-app-react-backend/backend/src/main/java/com/movieapp/api/MovieAppApplication.java
+/root/frontend/movie-app-react-backend/backend/src/main/java/com/movieapp/api/repository/TVShowRepository.java
+/root/frontend/movie-app-react-backend/backend/src/main/java/com/movieapp/api/controller/TVShowController.java

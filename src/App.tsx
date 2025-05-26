@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useTrendingMovies, useTrendingPeople, useTrendingTV } from "./api/getTrendings";
+import { useTrendingMovies, useTrendingTV } from "./api/getTrendings";
 import { MovieCard } from "./components/MovieCard";
 import { MediaType } from "./types/movieTypes";
 import { SimpleGrid, Card, Text, Flex } from "@chakra-ui/react";
@@ -17,11 +17,8 @@ type SearchForm = {
 
 function App() {
   const [topMovies, setTopMovies] = useState<MediaType[]>([]);
-  const [topPeople, setTopPeople] = useState<MediaType[]>([]);
   const [topTVSeries, setTopTVSeries] = useState<MediaType[]>([]);
-  const [selectedMediaType, setSelectedMediaType] = useState<
-    "movie" | "tv" | "people"
-  >("movie");
+  const [selectedMediaType, setSelectedMediaType] = useState<"movie" | "tv">("movie");
 
   // Init di React Hook Form
   const {
@@ -37,16 +34,14 @@ function App() {
   const searchTerm = watch("searchTerm");
 
   const movies = useTrendingMovies();
-  const people = useTrendingPeople();
   const tv = useTrendingTV();
 
   useEffect(() => {
     if (movies.data) setTopMovies(movies.data);
-    if (people.data) setTopPeople(people.data);
     if (tv.data) setTopTVSeries(tv.data);
-  }, [movies.data, people.data, tv.data]);
+  }, [movies.data, tv.data]);
 
-  const handleMediaTypeChange = (type: "movie" | "tv" | "people") => {
+  const handleMediaTypeChange = (type: "movie" | "tv") => {
     setSelectedMediaType(type);
     reset({ searchTerm: "" }); // Resetta il form al cambio media type
   };
@@ -60,9 +55,6 @@ function App() {
         break;
       case "tv":
         currentContent = topTVSeries;
-        break;
-      case "people":
-        currentContent = topPeople;
         break;
     }
 
@@ -123,10 +115,6 @@ function App() {
         onClick={() => handleMediaTypeChange("tv")}
         label="Trending TV Shows"
       />
-      <MediaButton
-        onClick={() => handleMediaTypeChange("people")}
-        label="Trending People"
-      />
 
       <Card.Root backgroundColor={"transparent"} border={"none"}>
         <Card.Header
@@ -162,9 +150,7 @@ function App() {
               placeholder={`Cerca ${
                 selectedMediaType === "movie"
                   ? "film"
-                  : selectedMediaType === "tv"
-                  ? "serie TV"
-                  : "persone"
+                  : "serie TV"
               }...`}
               error={!!errors.searchTerm}
               helperText={errors.searchTerm?.message}

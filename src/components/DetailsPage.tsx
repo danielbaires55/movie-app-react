@@ -1,171 +1,173 @@
 /* eslint-disable no-case-declarations */
 // Importa le dipendenze necessarie
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getDetails } from '../api/details';
-import { MovieDetailsType, TvDetailsType, PersonDetailsType } from '../types/detailsTypes';
-import { Spinner, Box, Button, Text, Image, VStack, IconButton } from '@chakra-ui/react';
+import { MovieDetailsType, TvDetailsType } from '../types/detailsTypes';
+import { Box, Container, Heading, Text, Image, Button, VStack, HStack, Badge, Spinner, Center, SimpleGrid } from '@chakra-ui/react';
 import { getMediaImage } from '../functions/functions';
-import { MediaType } from '../types/movieTypes';
-import { FaArrowLeft } from 'react-icons/fa';
 
 // Componente principale per la pagina dei dettagli
-const DetailsPage: React.FC = () => {
-
-  // Estrae i parametri dall'URL (tipo di media e ID)
+const DetailsPage = () => {
   const { media_type, id } = useParams<{ media_type: string; id: string }>();
-
-  // Gestione dello stato
-  const [data, setData] = useState<MovieDetailsType | TvDetailsType | PersonDetailsType | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const navigate = useNavigate();
+  const [details, setDetails] = useState<MovieDetailsType | TvDetailsType | null>(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Funzione per recuperare i dati dall'API
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const details = await getDetails({ media_type, id: Number(id) });
-      setData(details);
-    } catch (err) {
-      setError(`Failed to fetch details: ${err instanceof Error ? err.message : 'Unknown error'}`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Effettua la chiamata API quando cambiano media_type o id
   useEffect(() => {
+    const fetchData = async () => {
+      if (!media_type || !id) {
+        setError("Parametri mancanti");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const data = await getDetails({ media_type, id: parseInt(id) });
+        setDetails(data);
+        setError(null);
+      } catch (err) {
+        setError("Errore nel caricamento dei dettagli");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchData();
   }, [media_type, id]);
 
-  // Gestione stato di caricamento
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+      <Center h="100vh">
         <Spinner size="xl" />
-      </Box>
+      </Center>
     );
   }
 
-  // Gestione stato di errore
-  if (error) {
+  if (error || !details) {
     return (
-      <Box textAlign="center" mt="20">
-        <Text fontSize="xl" color="red.500">{error}</Text>
-        <Button mt="4" colorScheme="blue" onClick={fetchData}>Retry</Button>
-      </Box>
+      <Center h="100vh">
+        <VStack gap={4}>
+          <Text color="red.500">{error || "Dettagli non trovati"}</Text>
+          <Button onClick={() => navigate("/")}>Torna alla Home</Button>
+        </VStack>
+      </Center>
     );
   }
 
-  // Se non ci sono dati disponibili
-  if (!data) {
-    return <div>No details available.</div>;
-  }
+  const isMovie = media_type === "movie";
+  const title = isMovie ? (details as MovieDetailsType).title : (details as TvDetailsType).original_name;
+  const releaseDate = isMovie ? (details as MovieDetailsType).release_date : (details as TvDetailsType).first_air_date;
+  const overview = details.overview || "Nessuna descrizione disponibile";
+  const voteAverage = (details as any).voteAverage || (details as any).vote_average || 0;
+  const genres = (details as any).genres || "";
+  const languages = (details as any).languages || "";
+  const runtime = (details as any).runtime;
+  const status = (details as any).status || "";
 
-  // Prepara i dati per ottenere l'immagin
-  const tempMediaType: MediaType = {
-    ...data,
-    media_type: media_type as 'movie' | 'tv' | 'person',
+  // Formatta la data in formato italiano
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString('it-IT', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
   };
 
-  const imageUrl = getMediaImage(tempMediaType);
-
-  // Funzione che renderizza i dettagli in base al tipo di media
-  const renderDetails = () => {
-    switch (media_type) {
-      case 'movie':
-        const movie = data as MovieDetailsType;
-        return (
-          <Box p="4">
-            <Box display="flex" justifyContent="center" alignItems="center" mb="4">
-              <Image
-                src={imageUrl as string}
-                alt={movie.title}
-                objectFit="cover"
-                maxWidth="550px"
-                maxHeight="700px"
-                borderRadius="lg"
-              />
-            </Box>
-            <Text fontSize="2xl" fontWeight="bold" textAlign="center">{movie.title}</Text>
-            <Text mt="2" textAlign="center">{movie.overview}</Text>
-            <VStack mt="4" align="start">
-              <Text><strong>Release Date:</strong> {movie.release_date}</Text>
-              <Text><strong>Genres:</strong> {movie.genres.map(genre => genre.name).join(', ')}</Text>
-              <Text><strong>Rating:</strong> {movie.vote_average}</Text>
-              <Text><strong>Runtime:</strong> {movie.runtime} minutes</Text>
-              <Text><strong>Status:</strong> {movie.status}</Text>
-              <Text><strong>Genres:</strong> {movie.genres.map(genre => genre.name).join(', ')}</Text>
-            </VStack>
-          </Box>
-        );
-      case 'tv':
-        const tv = data as TvDetailsType;
-        return (
-          <Box p="4">
-            <Box display="flex" justifyContent="center" alignItems="center" mb="4">
-              <Image
-                src={imageUrl as string}
-                alt={tv.original_name}
-                objectFit="cover"
-                maxWidth="500px"
-                maxHeight="700px"
-                borderRadius="lg"
-              />
-            </Box>
-            <Text fontSize="2xl" fontWeight="bold" textAlign="center">{tv.original_name}</Text>
-            <Text mt="2" textAlign="center">{tv.overview}</Text>
-            <VStack mt="4"  align="start">
-              <Text><strong>First Air Date:</strong> {tv.first_air_date}</Text>
-              <Text><strong>Last Air Date: </strong> {tv.last_air_date}</Text>
-              <Text><strong>Genres:</strong> {tv.genres.map(genre => genre.name).join(', ')}</Text>
-              <Text><strong>Rating:</strong> {tv.vote_average}</Text>
-              <Text><strong>Languages:</strong> {tv.languages.join(', ')}</Text>
-              <Text><strong>Genres:</strong> {tv.genres.map(genre => genre.name).join(', ')}</Text>
-            </VStack>
-          </Box>
-        );
-      case 'person':
-        const person = data as PersonDetailsType;
-        return (
-          <Box p="4">
-            <Box display="flex" justifyContent="center" alignItems="center" mb="4">
-              <Image
-                src={imageUrl as string}
-                alt={person.name}
-                objectFit="cover"
-                maxWidth="500px"
-                maxHeight="700px"
-                borderRadius="lg"
-              />
-            </Box>
-            <Text fontSize="2xl" fontWeight="bold" textAlign="center">{person.name}</Text>
-            <Text mt="2" textAlign="center">{person.biography}</Text>
-            <VStack mt="4" align="start">
-              <Text><strong>Birthday:</strong> {person.birthday}</Text>
-              <Text><strong>Known For:</strong> {person.known_for_department}</Text>
-            </VStack>
-          </Box>
-        );
-      default:
-        return <div>Invalid media type.</div>;
-    }
-  };
-
-  // Rendering principale
   return (
-    <Box position="relative">
-      <IconButton
-        children={<FaArrowLeft />}
-        aria-label="Go back"
-        onClick={() => history.back()}
-        position="absolute"
-        top="4"
-        left="4"
-        colorScheme="blue"
-      />
-      {renderDetails()}
-    </Box>
+    <Container maxW="container.xl" py={8}>
+      <Button mb={4} onClick={() => navigate("/")}>
+        ← Torna alla Home
+      </Button>
+
+      <Box bg="white" borderRadius="lg" overflow="hidden" boxShadow="xl">
+        <Box p={6}>
+          <HStack gap={8} align="start">
+            <Box flexShrink={0}>
+              <Image
+                src={getMediaImage({ media_type, ...details })}
+                alt={title}
+                borderRadius="md"
+                boxSize="300px"
+                objectFit="cover"
+              />
+            </Box>
+
+            <VStack align="start" gap={4} flex={1}>
+              <Heading size="xl">{title}</Heading>
+
+              <HStack wrap="wrap" gap={2}>
+                <Badge colorScheme="blue" fontSize="md" px={2} py={1}>
+                  {isMovie ? "Film" : "Serie TV"}
+                </Badge>
+                <Badge colorScheme="green" fontSize="md" px={2} py={1}>
+                  Voto: {voteAverage.toFixed(1)}
+                </Badge>
+                {releaseDate && (
+                  <Badge colorScheme="purple" fontSize="md" px={2} py={1}>
+                    {formatDate(releaseDate)}
+                  </Badge>
+                )}
+                {status && (
+                  <Badge colorScheme="orange" fontSize="md" px={2} py={1}>
+                    {status}
+                  </Badge>
+                )}
+                {runtime && (
+                  <Badge colorScheme="teal" fontSize="md" px={2} py={1}>
+                    {runtime} min
+                  </Badge>
+                )}
+              </HStack>
+
+              <Box w="100%" borderBottom="1px" borderColor="gray.200" my={2} />
+
+              <VStack align="start" gap={2}>
+                {genres && (
+                  <Box>
+                    <Text fontWeight="bold" mb={1}>Generi:</Text>
+                    <HStack wrap="wrap" gap={2}>
+                      {genres.split(", ").map((genre, index) => (
+                        <Badge key={index} colorScheme="pink" fontSize="sm">
+                          {genre}
+                        </Badge>
+                      ))}
+                    </HStack>
+                  </Box>
+                )}
+
+                {languages && (
+                  <Box>
+                    <Text fontWeight="bold" mb={1}>Lingue:</Text>
+                    <HStack wrap="wrap" gap={2}>
+                      {languages.split(", ").map((language, index) => (
+                        <Badge key={index} colorScheme="cyan" fontSize="sm">
+                          {language}
+                        </Badge>
+                      ))}
+                    </HStack>
+                  </Box>
+                )}
+              </VStack>
+
+              <Box w="100%" borderBottom="1px" borderColor="gray.200" my={2} />
+
+              <Box>
+                <Text fontWeight="bold" mb={2}>Trama:</Text>
+                <Text color="gray.600" fontSize="lg" lineHeight="tall">
+                  {overview}
+                </Text>
+              </Box>
+            </VStack>
+          </HStack>
+        </Box>
+      </Box>
+    </Container>
   );
 };
+
 export default DetailsPage;

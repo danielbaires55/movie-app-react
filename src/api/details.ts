@@ -1,25 +1,22 @@
 /* eslint-disable no-useless-catch */
-import { MovieDetailsType, TvDetailsType, PersonDetailsType } from "../types/detailsTypes";
+import { MovieDetailsType, TvDetailsType } from "../types/detailsTypes";
 // Importa i tipi TypeScript che definiscono la struttura dei dettagli di film, serie TV e persone.
 
-const API_KEY = "04d35ad46e41458360d799f3c1a4b1ed";
-// Recupera la chiave API da una variabile d'ambiente per accedere alle API di TMDB (The Movie Database).
-
-const BASE_URL = "https://api.themoviedb.org/3/";
+const BASE_URL = "http://localhost:8080/api";
 // Recupera l'URL base dell'API TMDB da una variabile d'ambiente.
 
-export const getDetails = async ({ media_type, id }: { media_type: string; id: number }): Promise<MovieDetailsType | TvDetailsType | PersonDetailsType> => {
+export const getDetails = async ({ media_type, id }: { media_type: string; id: number }): Promise<MovieDetailsType | TvDetailsType> => {
   // Funzione asincrona per ottenere i dettagli di un film, una serie TV o una persona.
   // Accetta un oggetto con due proprietà:
   // - `media_type`: Specifica il tipo di media ("movie", "tv", "person").
   // - `id`: L'identificativo univoco del media.
 
   try {
-    // Costruzione dell'URL della richiesta
-    const response = await fetch(`${BASE_URL}${media_type}/${id}?api_key=${API_KEY}`);
+    const endpoint = media_type === "movie" ? "movies" : media_type;
+    const response = await fetch(`${BASE_URL}/${endpoint}/${id}`);
     // Esegue una richiesta HTTP GET all'endpoint di TMDB usando l'URL costruito.
 
-    if (!response.ok) throw new Error("Errore nella richiesta a TMDB");
+    if (!response.ok) throw new Error("Errore nella richiesta al backend");
     // Controlla se la risposta non è valida (status code non nella gamma 200-299).
     // In caso di errore, lancia un'eccezione con un messaggio.
 

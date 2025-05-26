@@ -1,0 +1,7 @@
+com/movieapp/api/model/TVShow.class
+com/movieapp/api/controller/TVShowController.class
+com/movieapp/api/repository/TVShowRepository.class
+com/movieapp/api/model/Movie.class
+com/movieapp/api/repository/MovieRepository.class
+com/movieapp/api/controller/MovieController.class
+com/movieapp/api/MovieAppApplication.class
